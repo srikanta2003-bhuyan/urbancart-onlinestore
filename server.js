@@ -19,11 +19,6 @@ app.use(express.json());
 // If your HTML files are inside "public" folder
 app.use(express.static(path.join(__dirname, "public")));
 
-// Connect MongoDB
-// ❗ LOCAL WILL NOT WORK ON RENDER → use MONGO_URI
-mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/urbancart")
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
 
 // ======================
 // MODELS
