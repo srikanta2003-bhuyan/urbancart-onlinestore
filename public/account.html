@@ -40,8 +40,8 @@
                     <div class="col-2">
                          <div class="form-container" id="accountBox">
                               <div class="form-btn">
-                                   <span onclick="login()">Login</span>
-                                   <span onclick="register()">Register</span>
+                                   <span onclick="showLoginTab()">Login</span>
+                                   <span onclick="showRegisterTab()">Register</span>
                                    <hr id="Indicator">
                               </div>
 
@@ -125,13 +125,13 @@
           var RegForm = document.getElementById("RegForm");
           var Indicator = document.getElementById("Indicator");
 
-          function register(){
+          function showRegisterTab(){
                RegForm.style.transform = "translateX(0px)";
                LoginForm.style.transform = "translateX(0px)";
                Indicator.style.transform = "translateX(100px)";
           }
 
-          function login(){
+          function showLoginTab(){
                RegForm.style.transform = "translateX(300px)";
                LoginForm.style.transform = "translateX(300px)";
                Indicator.style.transform = "translateX(0px)";
@@ -140,49 +140,52 @@
 
      <!-- REGISTER + LOGIN LOGIC -->
      <script>
-          function handleRegister(e){
+          async function handleRegister(e){
                e.preventDefault();
 
-               const name = document.getElementById("name").value;
-               const email = document.getElementById("email").value;
+               const name = document.getElementById("name").value.trim();
+               const email = document.getElementById("email").value.trim();
                const password = document.getElementById("password").value;
 
-               fetch("https://urbancart-onlinestore.onrender.com/api/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, email, password })
-               })
-               .then(res => res.json())
-               .then(data => {
-                    alert(data.message || data.error);
-               })
-               .catch(err => {
-                    console.log(err);
-                    alert("Server error");
-               });
+               try {
+                    const res = await fetch("/api/register", {
+                         method: "POST",
+                         headers: { "Content-Type": "application/json" },
+                         body: JSON.stringify({ name, email, password })
+                    });
+                    const data = await res.json();
+                    alert(data.message || data.error || "Registration failed");
+               } catch (err) {
+                    console.error(err);
+                    alert("Server error. Make sure the app is running on localhost:3000.");
+               }
           }
 
-          function handleLogin(e){
+          async function handleLogin(e){
                e.preventDefault();
 
-               const email = document.getElementById("loginEmail").value;
+               const email = document.getElementById("loginEmail").value.trim();
                const password = document.getElementById("loginPassword").value;
 
-               fetch("https://urbancart-onlinestore.onrender.com/api/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
-               })
-               .then(res => res.json())
-               .then(data => {
-                    if(data.message === "Login Successful"){
+               try {
+                    const res = await fetch("/api/login", {
+                         method: "POST",
+                         headers: { "Content-Type": "application/json" },
+                         body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json();
+
+                    if (data.message === "Login Successful" && data.user) {
                          localStorage.setItem("user", JSON.stringify(data.user));
                          alert("Login Successful");
-                         window.location.href = "account.html"; // reload same page
+                         window.location.href = "account.html";
                     } else {
-                         alert("Invalid Credentials");
+                         alert(data.message || "Invalid Credentials");
                     }
-               });
+               } catch (err) {
+                    console.error(err);
+                    alert("Server error. Make sure the app is running on localhost:3000.");
+               }
           }
      </script>
 
