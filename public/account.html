@@ -188,3 +188,27 @@
           }
      }
 </script>
+<!-- LOGIN STATE UI -->
+     <script>
+          const currentUser = JSON.parse(localStorage.getItem("user"));
+
+          if (currentUser) {
+               document.getElementById("accountBox").innerHTML = `
+                    <div style="text-align:center; padding:30px;">
+                         <h2>Welcome, ${currentUser.name} 👋</h2>
+                         <p><strong>Email:</strong> ${currentUser.email}</p>
+                         <br>
+                         <button onclick="logout()" class="btn">Logout</button>
+                    </div>
+               `;
+          }
+
+          function logout(){
+               localStorage.removeItem("user");
+               alert("Logged out successfully");
+               window.location.href = "account.html";
+          }
+     </script>
+
+</body>
+</html>
