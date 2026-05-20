@@ -139,77 +139,52 @@
      </script>
 
      <!-- REGISTER + LOGIN LOGIC -->
-     <script>
-          async function handleRegister(e){
-               e.preventDefault();
+<script>
+     async function handleRegister(e){
+          e.preventDefault();
 
-               const name = document.getElementById("name").value.trim();
-               const email = document.getElementById("email").value.trim();
-               const password = document.getElementById("password").value;
+          const name = document.getElementById("name").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
 
-               try {
-                    const res = await fetch("http://localhost:3000/api/register", {
-                         method: "POST",
-                         headers: { "Content-Type": "application/json" },
-                         body: JSON.stringify({ name, email, password })
-                    });
-                    const data = await res.json();
-                    alert(data.message || data.error || "Registration failed");
-               } catch (err) {
-                    console.error(err);
-                    alert("Server error. Make sure the app is running on localhost:3000.");
+          try {
+               const res = await fetch("/api/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, password })
+               });
+               const data = await res.json();
+               alert(data.message || data.error || "Registration failed");
+          } catch (err) {
+               console.error(err);
+               alert("Something went wrong. Please try again.");
+          }
+     }
+
+     async function handleLogin(e){
+          e.preventDefault();
+
+          const email = document.getElementById("loginEmail").value.trim();
+          const password = document.getElementById("loginPassword").value;
+
+          try {
+               const res = await fetch("/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+               });
+               const data = await res.json();
+
+               if (data.message === "Login Successful" && data.user) {
+                    localStorage.setItem("user", JSON.stringify(data.user));
+                    alert("Login Successful");
+                    window.location.href = "account.html";
+               } else {
+                    alert(data.message || "Invalid Credentials");
                }
+          } catch (err) {
+               console.error(err);
+               alert("Something went wrong. Please try again.");
           }
-
-          async function handleLogin(e){
-               e.preventDefault();
-
-               const email = document.getElementById("loginEmail").value.trim();
-               const password = document.getElementById("loginPassword").value;
-
-               try {
-                    const res = await fetch("http://localhost:3000/api/login", {
-                         method: "POST",
-                         headers: { "Content-Type": "application/json" },
-                         body: JSON.stringify({ email, password })
-                    });
-                    const data = await res.json();
-
-                    if (data.message === "Login Successful" && data.user) {
-                         localStorage.setItem("user", JSON.stringify(data.user));
-                         alert("Login Successful");
-                         window.location.href = "account.html";
-                    } else {
-                         alert(data.message || "Invalid Credentials");
-                    }
-               } catch (err) {
-                    console.error(err);
-                    alert("Server error. Make sure the app is running on localhost:3000.");
-               }
-          }
-     </script>
-
-     <!-- ✅ NEW: LOGIN STATE UI -->
-     <script>
-          const currentUser = JSON.parse(localStorage.getItem("user"));
-
-          if (currentUser) {
-               document.getElementById("accountBox").innerHTML = `
-                    <div style="text-align:center; padding:30px;">
-                         <h2>Welcome, ${currentUser.name} 👋</h2>
-                         <p><strong>Email:</strong> ${currentUser.email}</p>
-                         <br>
-                         <button onclick="logout()" class="btn">Logout</button>
-                    </div>
-               `;
-          }
-
-          function logout(){
-               localStorage.removeItem("user");
-               alert("Logged out successfully");
-               window.location.href = "account.html";
-          }
-     </script>
-
-</body>
-</html>
+     }
+</script>
